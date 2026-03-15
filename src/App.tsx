@@ -7,7 +7,6 @@ export default function App() {
   const particlesRef = React.useRef<any[]>([]);
   const mouseRef = React.useRef({ x: 0, y: 0, isPressed: false });
   const animationRef = React.useRef<number | null>(null);
-  const explosionTimesRef = React.useRef<number[]>([]);
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
@@ -52,7 +51,7 @@ export default function App() {
         this.vy += 0.02; // gravity light
         this.life -= 1;
         this.alpha = Math.max(0, this.life / 80);
-        
+
         // Follow mouse attraction
         const dx = mouseRef.current.x - this.x;
         const dy = mouseRef.current.y - this.y;
@@ -62,7 +61,7 @@ export default function App() {
           this.vx += (dx / dist) * force;
           this.vy += (dy / dist) * force;
         }
-        
+
         // Slow down
         this.vx *= 0.98;
         this.vy *= 0.98;
@@ -75,7 +74,7 @@ export default function App() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
-        
+
         // Glow
         ctx.shadowBlur = 15;
         ctx.shadowColor = this.color;
@@ -104,7 +103,7 @@ export default function App() {
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       // Draw connections between close particles
       ctx.strokeStyle = 'rgba(103, 232, 249, 0.1)';
       ctx.lineWidth = 0.8;
@@ -115,7 +114,7 @@ export default function App() {
           const dx = p1.x - p2.x;
           const dy = p1.y - p2.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (dist < 110) {
             ctx.globalAlpha = (110 - dist) / 110 * 0.3;
             ctx.beginPath();
@@ -132,7 +131,7 @@ export default function App() {
         const p = particlesRef.current[i];
         p.update();
         p.draw(ctx);
-        
+
         if (p.life <= 0) {
           particlesRef.current.splice(i, 1);
         }
@@ -157,7 +156,7 @@ export default function App() {
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.x = e.clientX;
       mouseRef.current.y = e.clientY;
-      
+
       // Create trail particles on move
       if (Math.random() < 0.6) {
         const color = colors[Math.floor(Math.random() * colors.length)];
@@ -166,71 +165,23 @@ export default function App() {
           const vy = (Math.random() - 0.5) * 3.5;
           const size = Math.random() * 2.5 + 1;
           particlesRef.current.push(new Particle(
-            e.clientX, 
-            e.clientY, 
-            vx, 
-            vy, 
-            size, 
-            color, 
+            e.clientX,
+            e.clientY,
+            vx,
+            vy,
+            size,
+            color,
             35
           ));
         }
       }
     };
 
-    const handleClick = (e: MouseEvent) => {
-      // Limit explosions to twice at a time
-      const now = Date.now();
-      explosionTimesRef.current = explosionTimesRef.current.filter(time => now - time < 800);
-      if (explosionTimesRef.current.length >= 2) return;
-      explosionTimesRef.current.push(now);
-
-      mouseRef.current.isPressed = true;
-      
-      const colorOptions = ['#22d3ee', '#c084fc', '#67e8f9'];
-      
-      // Explosion
-      for (let i = 0; i < 65; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 1.8 + Math.random() * 4.5;
-        const vx = Math.cos(angle) * speed;
-        const vy = Math.sin(angle) * speed - 1.5;
-        const size = Math.random() * 3.5 + 2;
-        const color = colorOptions[Math.floor(Math.random() * colorOptions.length)];
-        const life = 55 + Math.random() * 45;
-        
-        particlesRef.current.push(new Particle(
-          e.clientX, 
-          e.clientY, 
-          vx, 
-          vy, 
-          size, 
-          color, 
-          life
-        ));
-      }
-      
-      // Extra burst
-      setTimeout(() => {
-        for (let i = 0; i < 25; i++) {
-          const angle = Math.random() * Math.PI * 2;
-          const speed = 0.8 + Math.random() * 2.2;
-          const vx = Math.cos(angle) * speed;
-          const vy = Math.sin(angle) * speed;
-          const size = Math.random() * 2 + 1.5;
-          const color = '#e0f2fe';
-          particlesRef.current.push(new Particle(e.clientX, e.clientY, vx, vy, size, color, 75));
-        }
-      }, 40);
-    };
-
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('click', handleClick);
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('click', handleClick);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -287,8 +238,8 @@ export default function App() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-zinc-950 text-white font-sans">
       {/* Particle Background */}
-      <canvas 
-        ref={canvasRef} 
+      <canvas
+        ref={canvasRef}
         className="fixed inset-0 z-0 pointer-events-auto cursor-default"
         style={{ background: 'radial-gradient(circle at center, #18181b 0%, #09090b 70%)' }}
       />
@@ -298,9 +249,9 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 flex items-center justify-center">
-              <img 
-                src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773505256/Design_sem_nome_24_elywh4.png" 
-                alt="Quark Up Logo" 
+              <img
+                src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773505256/Design_sem_nome_24_elywh4.png"
+                alt="Quark Up Logo"
                 className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(34,211,238,0.7)] cursor-pointer"
                 onClick={() => scrollToSection('inicio')}
               />
@@ -316,11 +267,11 @@ export default function App() {
             <button onClick={() => scrollToSection('inicio')} className="hover:text-cyan-400 transition-colors cursor-pointer">INÍCIO</button>
             <button onClick={() => scrollToSection('sobre')} className="hover:text-cyan-400 transition-colors cursor-pointer">SOBRE</button>
             <button onClick={() => scrollToSection('portfolio')} className="hover:text-cyan-400 transition-colors cursor-pointer">PORTFÓLIO</button>
-            <button onClick={() => scrollToSection('contato')} className="hover:text-cyan-400 transition-colors cursor-pointer">CONTATO</button>
             <button onClick={() => scrollToSection('membros')} className="hover:text-cyan-400 transition-colors cursor-pointer">MEMBROS</button>
+            <button onClick={() => scrollToSection('contato')} className="hover:text-cyan-400 transition-colors cursor-pointer">CONTATO</button>
           </div>
 
-          <button 
+          <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden w-10 h-10 flex items-center justify-center text-2xl"
           >
@@ -330,57 +281,85 @@ export default function App() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden fixed inset-0 z-50 bg-zinc-950 pt-20">
-            <div className="flex flex-col items-center gap-8 text-2xl py-12">
-              <button onClick={() => scrollToSection('inicio')} className="hover:text-cyan-400 cursor-pointer">Início</button>
-              <button onClick={() => scrollToSection('sobre')} className="hover:text-cyan-400 cursor-pointer">Sobre</button>
-              <button onClick={() => scrollToSection('portfolio')} className="hover:text-cyan-400 cursor-pointer">Portfólio</button>
-              <button onClick={() => scrollToSection('contato')} className="hover:text-cyan-400 cursor-pointer">Contato</button>
-              <button onClick={() => scrollToSection('membros')} className="hover:text-cyan-400 cursor-pointer">Membros</button>
+          <div className="md:hidden fixed inset-0 z-[9999] w-full h-[100dvh] bg-zinc-950 backdrop-blur-3xl border-b border-white/10 pt-24 pb-8 shadow-2xl overflow-y-auto">
+            <div className="flex flex-col items-center gap-6 text-xl tracking-wider uppercase font-medium min-h-full">
+              <button
+                onClick={() => scrollToSection('inicio')}
+                className="w-full py-4 text-center hover:bg-white/5 hover:text-cyan-400 border-b border-white/5 cursor-pointer transition-all"
+              >
+                Início
+              </button>
+              <button
+                onClick={() => scrollToSection('sobre')}
+                className="w-full py-4 text-center hover:bg-white/5 hover:text-cyan-400 border-b border-white/5 cursor-pointer transition-all"
+              >
+                Sobre
+              </button>
+              <button
+                onClick={() => scrollToSection('portfolio')}
+                className="w-full py-4 text-center hover:bg-white/5 hover:text-cyan-400 border-b border-white/5 cursor-pointer transition-all"
+              >
+                Portfólio
+              </button>
+              <button
+                onClick={() => scrollToSection('membros')}
+                className="w-full py-4 text-center hover:bg-white/5 hover:text-cyan-400 cursor-pointer transition-all"
+              >
+                Membros
+              </button>
+              <button
+                onClick={() => scrollToSection('contato')}
+                className="w-full py-4 text-center hover:bg-white/5 hover:text-cyan-400 border-b border-white/5 cursor-pointer transition-all"
+              >
+                Contato
+              </button>
             </div>
           </div>
         )}
       </nav>
 
       {/* HERO */}
-      <section id="inicio" className="relative min-h-screen flex items-center justify-center z-10 pt-16">
-        <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-white/5 text-cyan-300 text-xs tracking-[3px] px-5 py-2.5 rounded-3xl border border-white/10 mb-6">
-            EMPRESA JÚNIOR DE FÍSICA DA UNB
+      <section id="inicio" className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated Background Gradients - Reduced z-index */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div className="relative z-0 text-center px-4 max-w-5xl mx-auto flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-8">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span className="text-xs uppercase tracking-[0.2em] text-cyan-100 font-medium">Empresa Júnior de Física da UnB</span>
           </div>
-          
-          <h1 className="text-7xl md:text-[92px] font-bold tracking-tighter leading-none mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-zinc-400">
+
+          <h1 className="text-7xl md:text-9xl font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white via-white/90 to-white/40 leading-none pb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
             QUARK UP
           </h1>
-          
+
           <p className="max-w-lg mx-auto text-2xl md:text-3xl text-zinc-400 font-light mb-10">
             Soluções científicas com precisão quântica
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
+            <button
               onClick={() => scrollToSection('portfolio')}
               className="px-10 py-4 cursor-pointer bg-white text-zinc-950 font-semibold rounded-2xl hover:bg-cyan-300 transition-all active:scale-[0.985] flex items-center justify-center gap-3 group"
             >
-              VER PROJETOS 
+              VER PROJETOS
               <span className="text-lg group-active:rotate-45 transition">→</span>
             </button>
-            
-            <button 
+
+            <button
               onClick={() => scrollToSection('contato')}
               className="px-10 py-4 cursor-pointer border border-white/30 hover:border-white/70 font-medium rounded-2xl transition-all"
             >
               FALE CONOSCO
             </button>
           </div>
-
-          <div className="mt-20 text-xs tracking-widest opacity-50">CLIQUE NA TELA PARA EXPLORAR AS PARTÍCULAS</div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-12 left-1/2 flex flex-col items-center gap-2">
-          <div className="text-[10px] tracking-widest">SCROLL</div>
-          <div className="h-10 w-[1px] bg-gradient-to-b from-transparent via-white/40 to-transparent"></div>
+        {/* Scroll Indicator - reduced z-index */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-10">
+          <span className="uppercase tracking-[0.3em] text-[10px] text-zinc-500 font-semibold">Scroll</span>
+          <div className="w-px h-12 bg-gradient-to-b from-zinc-500 to-transparent"></div>
         </div>
       </section>
 
@@ -392,7 +371,7 @@ export default function App() {
               <div className="sticky top-28">
                 <div className="uppercase text-cyan-400 text-sm tracking-[2px] mb-3">QUEM SOMOS</div>
                 <h2 className="text-5xl font-semibold tracking-tight leading-none mb-8">
-                  Física aplicada.<br/>Resultados reais.
+                  Física aplicada.<br />Resultados reais.
                 </h2>
                 <div className="h-px w-16 bg-cyan-400 mb-8"></div>
                 <p className="text-lg text-zinc-400 max-w-sm">
@@ -411,14 +390,14 @@ export default function App() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-6">
                 <div className="bg-white/5 border border-white/10 p-8 rounded-3xl">
                   <div className="text-5xl mb-6">🔬</div>
                   <h4 className="font-semibold text-xl mb-2">Ciência Aplicada</h4>
                   <p className="text-sm text-zinc-400">Desenvolvemos modelos físicos e simulações personalizadas para pesquisa e indústria.</p>
                 </div>
-                
+
                 <div className="bg-white/5 border border-white/10 p-8 rounded-3xl">
                   <div className="text-5xl mb-6">📈</div>
                   <h4 className="font-semibold text-xl mb-2">Otimização</h4>
@@ -441,7 +420,7 @@ export default function App() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {portfolioItems.map((item, index) => (
-              <div 
+              <div
                 key={item.id}
                 onClick={() => setExpandedPortfolio(item.id)}
                 className="group bg-zinc-950 border border-white/10 hover:border-cyan-400/60 transition-all duration-500 rounded-3xl p-8 flex flex-col cursor-pointer hover:shadow-lg hover:shadow-cyan-900/10"
@@ -452,12 +431,12 @@ export default function App() {
                     <span className="text-white text-sm">↗</span>
                   </div>
                 </div>
-                
+
                 <h3 className="text-2xl font-semibold mb-2 leading-tight tracking-tight">{item.title}</h3>
                 <p className="text-zinc-500 line-clamp-2 mt-4 text-sm">{item.challenge}</p>
-                
+
                 <div className="pt-6 mt-auto border-t border-white/10 text-xs flex items-center gap-2 transition-all mt-6">
-                  <span className="text-zinc-500 font-mono">PROJETO #{String(index+1).padStart(2, '0')}</span>
+                  <span className="text-zinc-500 font-mono">PROJETO #{String(index + 1).padStart(2, '0')}</span>
                   <div className="flex-1 h-px bg-white/10"></div>
                   <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400">
                     VER RESULTADO
@@ -478,17 +457,68 @@ export default function App() {
               <h3 className="text-3xl font-medium mb-4">Modelagem Matemática</h3>
               <p className="text-zinc-400">Criação de equações e simulações que representam fenômenos físicos e biológicos complexos.</p>
             </div>
-            
+
             <div className="p-10 border border-white/10 rounded-3xl">
               <div className="text-cyan-400 text-7xl mb-6">02</div>
               <h3 className="text-3xl font-medium mb-4">Análise de Dados</h3>
               <p className="text-zinc-400">Utilizamos Python, Machine Learning e ferramentas de visualização para extrair insights.</p>
             </div>
-            
+
             <div className="p-10 border border-white/10 rounded-3xl">
               <div className="text-cyan-400 text-7xl mb-6">03</div>
               <h3 className="text-3xl font-medium mb-4">Soluções Personalizadas</h3>
               <p className="text-zinc-400">Desenvolvemos ferramentas e planilhas sob medida para otimizar processos.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* MEMBROS */}
+      <section id="membros" className="relative z-10 py-24 bg-zinc-900 border-t border-white/5">
+        <div className="max-w-6xl mx-auto px-8">
+          <div className="flex flex-col items-center text-center mb-16">
+            <div className="uppercase text-xs tracking-widest text-emerald-400 mb-3">NOSSA EQUIPE</div>
+            <h2 className="text-6xl font-semibold tracking-tighter">Membros</h2>
+            <p className="mt-4 max-w-md text-zinc-400">Pessoas trabalhando juntas pelo desenvolvimento de soluções disruptivas</p>
+          </div>
+
+          <div className="flex flex-col items-center gap-16">
+            {/* Presidente */}
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-cyan-400/30 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
+                <img
+                  src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773505847/WhatsApp_Image_2026-02-21_at_17.44.54_whbu5w.jpg"
+                  alt="Giovany Medeiros"
+                  className="w-full h-full object-cover object-top hover:scale-110 transition-transform duration-700"
+                />
+              </div>
+              <div>
+                <h3 className="text-2xl font-medium tracking-tight">Giovany Medeiros</h3>
+                <p className="text-cyan-400 tracking-wider text-xs mt-1.5 font-bold uppercase">Presidente da Quark Up</p>
+              </div>
+            </div>
+
+            {/* Equipe Completa */}
+            <div className="w-full max-w-4xl bg-zinc-950/50 rounded-3xl overflow-hidden border border-white/10 mt-4 backdrop-blur-md relative group">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 pointer-events-none"></div>
+              <div className="aspect-[16/10] md:aspect-[21/9] w-full relative">
+                <img
+                  src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773506011/Gemini_Generated_Image_okbe68okbe68okbe_hde1ia.png"
+                  alt="Equipe Quark Up"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                />
+              </div>
+              <div className="p-8 md:p-14 relative z-20 -mt-16 md:-mt-24">
+                <h3 className="text-3xl md:text-4xl font-semibold mb-6 text-white tracking-tight drop-shadow-md">Sobre a Empresa e a UnB</h3>
+                <div className="space-y-4 text-zinc-300 md:text-lg font-light leading-relaxed drop-shadow-sm max-w-3xl">
+                  <p>
+                    A Quark Up é a Empresa Júnior de Física da Universidade de Brasília (UnB). Somos formados por estudantes apaixonados por ciência, tecnologia e inovação, aplicando os amplos conhecimentos adquiridos ao longo da graduação para entregar soluções excepcionais e com base técnica sólida para o mercado.
+                  </p>
+                  <p>
+                    Com o respaldo acadêmico inestimável de professores e pesquisadores de ponta da UnB, garantimos precisão técnica, rigor metodológico e a mesma excelência presente em nossos laboratórios, impulsionando a ciência que faz a valer a pena na vida real.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -516,8 +546,8 @@ export default function App() {
                 <label className="block text-xs uppercase tracking-widest mb-2 text-zinc-400">Mensagem</label>
                 <textarea className="w-full bg-transparent border-b border-white/30 focus:border-cyan-400 py-3 outline-none text-lg placeholder:text-zinc-500 h-32 resize-y" placeholder="Descreva seu projeto ou dúvida..."></textarea>
               </div>
-              
-              <button 
+
+              <button
                 type="submit"
                 className="w-full py-4 bg-gradient-to-r from-cyan-400 to-violet-500 text-black font-semibold rounded-2xl hover:brightness-110 active:scale-[0.985] transition-all text-sm tracking-widest cursor-pointer"
               >
@@ -533,65 +563,14 @@ export default function App() {
         </div>
       </section>
 
-      {/* MEMBROS */}
-      <section id="membros" className="relative z-10 py-24 bg-zinc-900 border-t border-white/5">
-        <div className="max-w-6xl mx-auto px-8">
-          <div className="flex flex-col items-center text-center mb-16">
-            <div className="uppercase text-xs tracking-widest text-emerald-400 mb-3">NOSSA EQUIPE</div>
-            <h2 className="text-6xl font-semibold tracking-tighter">Membros</h2>
-            <p className="mt-4 max-w-md text-zinc-400">Pessoas trabalhando juntas pelo desenvolvimento de soluções disruptivas</p>
-          </div>
-
-          <div className="flex flex-col items-center gap-16">
-            {/* Presidente */}
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-cyan-400/30 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
-                <img 
-                  src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773505847/WhatsApp_Image_2026-02-21_at_17.44.54_whbu5w.jpg" 
-                  alt="Giovany Medeiros"
-                  className="w-full h-full object-cover object-top hover:scale-110 transition-transform duration-700"
-                />
-              </div>
-              <div>
-                <h3 className="text-2xl font-medium tracking-tight">Giovany Medeiros</h3>
-                <p className="text-cyan-400 tracking-wider text-xs mt-1.5 font-bold uppercase">Presidente da Quark Up</p>
-              </div>
-            </div>
-
-            {/* Equipe Completa */}
-            <div className="w-full max-w-4xl bg-zinc-950/50 rounded-3xl overflow-hidden border border-white/10 mt-4 backdrop-blur-md relative group">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 pointer-events-none"></div>
-              <div className="aspect-[16/10] md:aspect-[21/9] w-full relative">
-                <img 
-                  src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773506011/Gemini_Generated_Image_okbe68okbe68okbe_hde1ia.png" 
-                  alt="Equipe Quark Up"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
-                />
-              </div>
-              <div className="p-8 md:p-14 relative z-20 -mt-16 md:-mt-24">
-                <h3 className="text-3xl md:text-4xl font-semibold mb-6 text-white tracking-tight drop-shadow-md">Sobre a Empresa e a UnB</h3>
-                <div className="space-y-4 text-zinc-300 md:text-lg font-light leading-relaxed drop-shadow-sm max-w-3xl">
-                  <p>
-                    A Quark Up é a Empresa Júnior de Física da Universidade de Brasília (UnB). Somos formados por estudantes apaixonados por ciência, tecnologia e inovação, aplicando os amplos conhecimentos adquiridos ao longo da graduação para entregar soluções excepcionais e com base técnica sólida para o mercado.
-                  </p>
-                  <p>
-                    Com o respaldo acadêmico inestimável de professores e pesquisadores de ponta da UnB, garantimos precisão técnica, rigor metodológico e a mesma excelência presente em nossos laboratórios, impulsionando a ciência que faz a valer a pena na vida real.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="relative z-10 py-10 border-t border-white/10 bg-black">
         <div className="max-w-6xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-8 h-8 flex items-center justify-center">
-              <img 
-                src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773505256/Design_sem_nome_24_elywh4.png" 
-                alt="Quark Up Logo" 
+              <img
+                src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773505256/Design_sem_nome_24_elywh4.png"
+                alt="Quark Up Logo"
                 className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"
               />
             </div>
@@ -602,12 +581,12 @@ export default function App() {
             <a href="https://www.instagram.com/quarkupp/" target="_blank" rel="noreferrer" className="text-zinc-400 hover:text-cyan-400 transition-colors cursor-pointer group flex items-center justify-center w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:border-cyan-400/50">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
             </a>
-            
+
             <div className="h-6 w-px bg-white/20 hidden md:block"></div>
 
-            <img 
-              src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773507355/Webysther_20160322_-_Logo_UnB__sem_texto_xhr7az.svg" 
-              alt="UnB Logo" 
+            <img
+              src="https://res.cloudinary.com/dlv8yppuo/image/upload/v1773507355/Webysther_20160322_-_Logo_UnB__sem_texto_xhr7az.svg"
+              alt="UnB Logo"
               className="h-8 w-auto opacity-70 hover:opacity-100 transition-opacity"
             />
           </div>
@@ -617,7 +596,7 @@ export default function App() {
       {/* Portfolio Modal */}
       {expandedPortfolio && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md">
-          <div 
+          <div
             className="absolute inset-0 cursor-pointer"
             onClick={() => setExpandedPortfolio(null)}
           />
@@ -628,16 +607,16 @@ export default function App() {
                 <div key={item.id} className="p-8 md:p-12">
                   <div className="flex justify-between items-start mb-8">
                     <div className="text-6xl">{item.icon}</div>
-                    <button 
+                    <button
                       onClick={() => setExpandedPortfolio(null)}
                       className="w-10 h-10 rounded-full bg-white/10 hover:bg-rose-500/20 text-white flex items-center justify-center transition-colors cursor-pointer"
                     >
                       ✕
                     </button>
                   </div>
-                  
+
                   <h3 className="text-3xl md:text-4xl font-bold mb-8 leading-tight tracking-tight">{item.title}</h3>
-                  
+
                   <div className="grid md:grid-cols-3 gap-8 md:gap-12">
                     <div className="space-y-4">
                       <div className="inline-flex items-center gap-2 bg-rose-500/10 text-rose-400 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">
@@ -645,14 +624,14 @@ export default function App() {
                       </div>
                       <p className="text-zinc-300 text-[15px] leading-relaxed">{item.challenge}</p>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div className="inline-flex items-center gap-2 bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">
                         <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span> Solução
                       </div>
                       <p className="text-zinc-300 text-[15px] leading-relaxed">{item.solution}</p>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Resultado
@@ -660,9 +639,9 @@ export default function App() {
                       <p className="text-zinc-300 text-[15px] leading-relaxed">{item.result}</p>
                     </div>
                   </div>
-                  
+
                   <div className="mt-12 pt-8 border-t border-white/10 text-right">
-                    <button 
+                    <button
                       onClick={() => setExpandedPortfolio(null)}
                       className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl text-sm font-medium transition-all cursor-pointer"
                     >
